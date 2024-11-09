@@ -1,27 +1,45 @@
+
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
+/**
+ * IUser interface extends Mongoose's Document, representing a User entity.
+ * 
+ * @property name - The name of the user.
+ * @property email - The email of the user, which is unique and stored in lowercase.
+ * @property password - The hashed password of the user.
+ */
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
 }
 
+// User schema fields definition
 const userFields = {
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
 };
 
+// Create a Mongoose schema for the User model
 const UserSchema: Schema<IUser> = new Schema(userFields);
 
-// Helper function to hash the password
+/**
+ * Hashes a plain text password using bcrypt.
+ * 
+ * @param password - The plain text password to hash.
+ * @returns A promise that resolves to the hashed password string.
+ */
 const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
   return bcrypt.hash(password, saltRounds);
 };
 
-// Pre-save hook using async/await
+/**
+ * Mongoose pre-save hook to hash the password if it has been modified.
+ * This function runs automatically before saving a User document.
+ */
 UserSchema.pre<IUser>('save', async function () {
   const user = this as IUser;
 
@@ -30,6 +48,8 @@ UserSchema.pre<IUser>('save', async function () {
   }
 });
 
-// Export the User model
+/**
+ * Mongoose model for User, providing an interface to the User collection in the database.
+ */
 export const User = mongoose.model<IUser>('User', UserSchema);
 

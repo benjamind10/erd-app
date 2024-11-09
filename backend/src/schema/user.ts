@@ -1,3 +1,4 @@
+
 import { gql } from 'apollo-server';
 
 export const userTypeDefs = gql`
@@ -14,5 +15,8 @@ export const userTypeDefs = gql`
 
   type Mutation {
     createUser(name: String!, email: String!, password: String!): User!
+    updateUserName(id: ID!, name: String!): User!  # Only updates the name field
+    deleteUser(id: ID!): Boolean!
   }
 `;
+

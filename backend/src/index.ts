@@ -1,3 +1,4 @@
+
 import { config } from 'dotenv';
 config();
 
@@ -10,16 +11,28 @@ import { createApolloServer, startApolloServer } from './utilities/server';
 import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 
+// Load MongoDB URI from environment variables
 const { MONGODB_URI } = process.env;
 
-// Main function to start the server
+/**
+ * Main function to initialize and start the server.
+ * This function checks for the necessary environment variables,
+ * connects to the MongoDB database, and starts the Apollo Server.
+ */
 const startServer = async () => {
+  // Check if the MongoDB URI is defined
   if (isNilOrEmpty(MONGODB_URI)) {
     exitWithError('❌ MONGODB_URI is not defined in the environment variables');
   }
 
   try {
-    // Compose the initialization steps using Ramda's pipeWith for async functions
+    /**
+     * Compose server initialization steps using Ramda's pipeWith.
+     * The steps are asynchronous and involve:
+     * 1. Connecting to MongoDB.
+     * 2. Creating the Apollo Server with the specified schema and resolvers.
+     * 3. Starting the Apollo Server.
+     */
     await R.pipeWith(R.andThen, [
       connectToMongoDB,
       () => createApolloServer({ typeDefs, resolvers }),
@@ -30,4 +43,6 @@ const startServer = async () => {
   }
 };
 
+// Start the server
 startServer();
+
