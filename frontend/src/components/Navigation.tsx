@@ -1,8 +1,14 @@
 import React from 'react';
-import { AppBar, Toolbar, Button, Typography, Container } from '@mui/material';
+import { AppBar, Toolbar, Button, Typography, Container, IconButton } from '@mui/material';
+import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
-const Navigation: React.FC = () => {
+interface NavigationProps {
+  toggleDarkMode: () => void;
+  darkMode: boolean;
+}
+
+const Navigation: React.FC<NavigationProps> = ({ toggleDarkMode, darkMode }) => {
   return (
     <AppBar position="static">
       <Container maxWidth="md">
@@ -13,6 +19,15 @@ const Navigation: React.FC = () => {
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
+          <Button color="inherit" component={Link} to="/feeding">
+            Record Feeding
+          </Button>
+          <Button color="inherit" component={Link} to="/blog">
+            Blog
+          </Button>
+          <IconButton color="inherit" onClick={toggleDarkMode}>
+            {darkMode ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
         </Toolbar>
       </Container>
     </AppBar>
