@@ -1,5 +1,14 @@
 # Node.js
 node_modules/
+**/node_modules/
+
+# Yarn lock files
+yarn.lock
+**/yarn.lock
+
+# NPM lock files
+package-lock.json
+**/package-lock.json
 
 # Logs
 logs
@@ -37,6 +46,3 @@ dist/
 .idea/
 .vscode/
 *.iml
-
-# Nix Stuff
-flake.lock
