@@ -1,6 +1,11 @@
 
 import { gql } from 'apollo-server';
 
+/**
+ * GraphQL schema definition for the User entity.
+ * This schema defines the User type, and provides
+ * queries and mutations to interact with user data.
+ */
 export const userTypeDefs = gql`
   type User {
     id: ID!
