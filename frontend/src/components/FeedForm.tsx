@@ -9,20 +9,25 @@ interface FeedFormProps {
 
 const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
   const [feedingTime, setFeedingTime] = useState<Dayjs | null>(dayjs());
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number | string>(0); 
   const [dha, setDha] = useState<boolean>(false);
 
-  // Handle form submission
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (feedingTime && amount > 0) {
-      onSubmit(feedingTime.toISOString(), amount, dha);
+    const parsedAmount = typeof amount === 'string' && amount === '' ? 0 : Number(amount);
+    if (feedingTime && parsedAmount > 0) {
+      onSubmit(feedingTime.toISOString(), parsedAmount, dha);
     }
+  };
+
+  const handleClear = () => {
+    setFeedingTime(dayjs());
+    setAmount(0);
+    setDha(false);
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-      {/* DateTime Picker for feeding time */}
       <DateTimePicker
         label="Feeding Time"
         value={feedingTime}
@@ -31,24 +36,28 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
           textField: { fullWidth: true, margin: 'normal' },
         }}
       />
-      {/* Input for amount */}
       <TextField
         label="Amount (oz)"
         type="number"
         value={amount}
-        onChange={(e) => setAmount(Math.max(0, Number(e.target.value)))} // Prevents negative values
+        onFocus={() => amount === 0 && setAmount('')} // Clears the field if the current value is 0
+        onBlur={() => setAmount(prev => (prev === '' ? 0 : prev))} // Resets to 0 if left empty
+        onChange={(e) => setAmount(Math.max(0, Number(e.target.value)) || '')} // Allow empty string temporarily
         fullWidth
         margin="normal"
       />
-      {/* Checkbox for DHA */}
       <FormControlLabel
         control={<Checkbox checked={dha} onChange={(e) => setDha(e.target.checked)} />}
         label="DHA Included"
       />
-      {/* Submit Button */}
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Submit
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-evenly', mt: 2 }}>
+        <Button type="submit" variant="contained" color="primary">
+          Submit
+        </Button>
+        <Button variant="outlined" color="secondary" onClick={handleClear}>
+          Clear
+        </Button>
+      </Box>
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -26,7 +26,7 @@ const App: React.FC = () => {
 
   // Toggle the theme mode and save preference to localStorage
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
+    setDarkMode(prevMode => {
       const newMode = !prevMode;
       localStorage.setItem('theme', newMode ? 'dark' : 'light');
       return newMode;
@@ -43,6 +43,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/feeding" element={<Feeding />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/doody" element={<Blog />} />
           </Routes>
         </Router>
       </LocalizationProvider>

@@ -12,7 +12,7 @@ const Feeding: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" sx={{ mt: 2 }}>
-        Welcome to the ERD Feeding Page
+        Feeding Tracker:
       </Typography>
       <FeedForm onSubmit={handleFormSubmit} />
     </Container>
