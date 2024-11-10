@@ -10,15 +10,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import Navigation from './components/Navigation';
-import Home from './routes/Home';
+//import Home from './routes/Home';
 import Feeding from './routes/Feeding';
 import Doody from './routes/Doody';
 import Blog from './routes/Blog';
 import Login from './routes/Login';
+import NotFound from './routes/NotFound';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
-const ProtectedRoute = ({ children }: { children: JSX.Element; }) => {
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 };
 
@@ -53,11 +54,33 @@ const App: React.FC = () => {
         <Router>
           <Navigation toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
           <Routes>
+            <Route path="/" element={<Navigate to="/feeding" replace />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/feeding" element={<ProtectedRoute><Feeding /></ProtectedRoute>} />
-            <Route path="/doody" element={<ProtectedRoute><Doody /></ProtectedRoute>} />
-            <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to={isAuthenticated() ? "/feeding" : "/login"} />} />
+            <Route
+              path="/feeding"
+              element={
+                <ProtectedRoute>
+                  <Feeding />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doody"
+              element={
+                <ProtectedRoute>
+                  <Doody />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/blog"
+              element={
+                <ProtectedRoute>
+                  <Blog />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </LocalizationProvider>
