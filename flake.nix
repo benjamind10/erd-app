@@ -1,5 +1,5 @@
 {
-  description = "Frontend development environment with React, TypeScript, ESLint, and Yarn";
+  description = "Frontend development environment with React, TypeScript, ESLint, Yarn, and Heroku CLI";
 
   inputs = {
     # Use the latest Nix Packages
@@ -25,6 +25,9 @@
             pkgs.nodePackages.typescript-language-server  # LSP server for TypeScript
             pkgs.nodePackages.eslint                     # Linting tool for JavaScript/TypeScript
             pkgs.nodePackages.prettier                   # Code formatter
+
+            # Heroku CLI
+            pkgs.heroku          # Heroku CLI for deploying and managing apps
           ];
 
           # Optional: Additional Environment Setup
@@ -36,3 +39,4 @@
       }
     );
 }
+

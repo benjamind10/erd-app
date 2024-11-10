@@ -1,17 +1,14 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-
-// Retrieve the Apollo URI from the environment variable
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_APOLLO_URI,
-  cache: new InMemoryCache(),
-});
+import { ApolloProvider } from '@apollo/client';
+import client from './api/client';
+import { AuthProvider } from './context/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <ApolloProvider client={client}>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </ApolloProvider>
 );

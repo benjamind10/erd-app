@@ -1,24 +1,37 @@
 import { Feeding, IFeeding } from '../models/feeding';
-import { IUser } from '../models/users';
+import { IUser } from '../models/user';
 
 export const feedingResolvers = {
   Query: {
     getFeeding: async (_parent: undefined, args: { id: string }) => {
-      const feeding = await Feeding.findById(args.id);
-      if (!feeding) return null;
+      try {
+        const feeding = await Feeding.findById(args.id);
+        if (!feeding) {
+          console.error(`Feeding record not found for ID: ${args.id}`);
+          throw new Error('Feeding record not found');
+        }
 
-      return {
-        ...feeding.toObject(),
-        id: feeding._id.toString(),
-      };
+        return {
+          ...feeding.toObject(),
+          id: feeding._id.toString(),
+        };
+      } catch (error) {
+        console.error('Error retrieving feeding record:', error);
+        throw new Error('Failed to retrieve feeding record');
+      }
     },
 
     getFeedings: async () => {
-      const feedings = await Feeding.find();
-      return feedings.map(feeding => ({
-        ...feeding.toObject(),
-        id: feeding._id.toString(),
-      }));
+      try {
+        const feedings = await Feeding.find();
+        return feedings.map(feeding => ({
+          ...feeding.toObject(),
+          id: feeding._id.toString(),
+        }));
+      } catch (error) {
+        console.error('Error retrieving feeding records:', error);
+        throw new Error('Failed to retrieve feeding records');
+      }
     },
   },
 
@@ -30,20 +43,24 @@ export const feedingResolvers = {
     ) => {
       const { feedingTime, amount, dha } = args;
 
-      // Directly pass feedingTime from frontend to MongoDB
-      const newFeeding = new Feeding({
-        feedingTime, // Store as-is
-        amount,
-        dha,
-        addedBy: context.user?.id || 'anonymous-user',
-      });
+      try {
+        const newFeeding = new Feeding({
+          feedingTime,
+          amount,
+          dha,
+          addedBy: context.user?.id || 'anonymous-user',
+        });
 
-      await newFeeding.save();
+        await newFeeding.save();
 
-      return {
-        ...newFeeding.toObject(),
-        id: newFeeding._id.toString(),
-      };
+        return {
+          ...newFeeding.toObject(),
+          id: newFeeding._id.toString(),
+        };
+      } catch (error) {
+        console.error('Error creating feeding record:', error);
+        throw new Error('Failed to create feeding record');
+      }
     },
 
     updateFeeding: async (
@@ -54,34 +71,49 @@ export const feedingResolvers = {
       const { id, feedingTime, amount, dha } = args;
 
       if (!feedingTime) {
+        console.warn('Feeding time must be provided when updating');
         throw new Error('Feeding time must be provided when updating');
       }
 
-      // Construct update data without converting feedingTime
-      const updateData: Partial<IFeeding> = {
-        feedingTime,
-        editedBy: context.user?.id || 'anonymous-user',
-      };
-      if (amount !== undefined) updateData.amount = amount;
-      if (dha !== undefined) updateData.dha = dha;
+      try {
+        const updateData: Partial<IFeeding> = {
+          feedingTime,
+          editedBy: context.user?.id || 'anonymous-user',
+        };
+        if (amount !== undefined) updateData.amount = amount;
+        if (dha !== undefined) updateData.dha = dha;
 
-      const updatedFeeding = await Feeding.findByIdAndUpdate(id, updateData, {
-        new: true,
-      });
+        const updatedFeeding = await Feeding.findByIdAndUpdate(id, updateData, {
+          new: true,
+        });
 
-      if (!updatedFeeding) {
-        throw new Error('Feeding record not found');
+        if (!updatedFeeding) {
+          console.error(`Feeding record not found for ID: ${id}`);
+          throw new Error('Feeding record not found');
+        }
+
+        return {
+          ...updatedFeeding.toObject(),
+          id: updatedFeeding._id.toString(),
+        };
+      } catch (error) {
+        console.error('Error updating feeding record:', error);
+        throw new Error('Failed to update feeding record');
       }
-
-      return {
-        ...updatedFeeding.toObject(),
-        id: updatedFeeding._id.toString(),
-      };
     },
 
     deleteFeeding: async (_parent: undefined, args: { id: string }) => {
-      const result = await Feeding.findByIdAndDelete(args.id);
-      return result ? true : false;
+      try {
+        const result = await Feeding.findByIdAndDelete(args.id);
+        if (!result) {
+          console.error(`Feeding record not found for ID: ${args.id}`);
+          throw new Error('Feeding record not found');
+        }
+        return true;
+      } catch (error) {
+        console.error('Error deleting feeding record:', error);
+        throw new Error('Failed to delete feeding record');
+      }
     },
   },
 };

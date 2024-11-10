@@ -21,7 +21,7 @@ export const createApolloServer = (options: Config): ApolloServer => {
       }
 
       const authHeader = req.headers.authorization || '';
-      const user = getUserFromAuthHeader(authHeader); 
+      const user = getUserFromAuthHeader(authHeader);
 
       if (!user) {
         throw new Error('Authentication required');
@@ -38,7 +38,9 @@ export const createApolloServer = (options: Config): ApolloServer => {
  * Starts the ApolloServer instance.
  * @param server - The ApolloServer instance to start.
  */
-export const startApolloServer = async (server: ApolloServer): Promise<void> => {
+export const startApolloServer = async (
+  server: ApolloServer
+): Promise<void> => {
   const { url } = await server.listen();
   console.log(`🚀 Server ready at ${url}`);
 };
