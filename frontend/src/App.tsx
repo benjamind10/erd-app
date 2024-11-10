@@ -18,6 +18,7 @@ import Login from './routes/Login';
 import NotFound from './routes/NotFound';
 import TodayFeedings from './routes/TodayFeedings';
 import History from './routes/History';
+import Analytics from './routes/Analytics';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -42,7 +43,7 @@ const App: React.FC = () => {
 
   // Toggle the theme mode and save preference to localStorage
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
+    setDarkMode(prevMode => {
       const newMode = !prevMode;
       localStorage.setItem('theme', newMode ? 'dark' : 'light');
       return newMode;
@@ -95,6 +96,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <History />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feeding/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
                 </ProtectedRoute>
               }
             />
