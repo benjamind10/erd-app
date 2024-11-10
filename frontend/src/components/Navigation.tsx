@@ -1,3 +1,4 @@
+// src/components/Navigation.tsx
 import React, { useState } from 'react';
 import {
   AppBar,
@@ -12,8 +13,8 @@ import {
   Button,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-//import SettingsIcon from '@mui/icons-material/Settings';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface NavigationProps {
   toggleDarkMode: () => void;
@@ -25,9 +26,16 @@ const Navigation: React.FC<NavigationProps> = ({
   darkMode,
 }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   const drawerContent = (
@@ -50,6 +58,15 @@ const Navigation: React.FC<NavigationProps> = ({
         <ListItemButton component={Link} to="/blog">
           <ListItemText primary="Blog" />
         </ListItemButton>
+        {isAuthenticated ? (
+          <ListItemButton onClick={handleLogout}>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        ) : (
+          <ListItemButton component={Link} to="/login">
+            <ListItemText primary="Login" />
+          </ListItemButton>
+        )}
       </List>
     </Box>
   );
@@ -85,22 +102,26 @@ const Navigation: React.FC<NavigationProps> = ({
             Feeding Tracker
           </Button>
           <Button color="inherit" component={Link} to="/doody">
-            Record Doody
+            Doody Tracker
           </Button>
           <Button color="inherit" component={Link} to="/blog">
             Blog
           </Button>
+          {isAuthenticated ? (
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <Button color="inherit" component={Link} to="/login">
+              Login
+            </Button>
+          )}
         </Box>
 
         {/* Dark Mode Toggle */}
         <IconButton color="inherit" onClick={toggleDarkMode}>
           {darkMode ? '🌙' : '🌞'}
         </IconButton>
-
-        {/* Settings Icon */}
-        {/*<IconButton color="inherit" component={Link} to="/settings">
-          <SettingsIcon />
-        </IconButton> */}
       </Toolbar>
     </AppBar>
   );

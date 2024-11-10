@@ -1,10 +1,9 @@
-
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 /**
  * IUser interface extends Mongoose's Document, representing a User entity.
- * 
+ *
  * @property name - The name of the user.
  * @property email - The email of the user, which is unique and stored in lowercase.
  * @property password - The hashed password of the user.
@@ -13,6 +12,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 // User schema fields definition
@@ -27,7 +27,7 @@ const UserSchema: Schema<IUser> = new Schema(userFields);
 
 /**
  * Hashes a plain text password using bcrypt.
- * 
+ *
  * @param password - The plain text password to hash.
  * @returns A promise that resolves to the hashed password string.
  */
@@ -49,7 +49,18 @@ UserSchema.pre<IUser>('save', async function () {
 });
 
 /**
+ * Method to compare a candidate password with the stored hashed password.
+ * @param candidatePassword - The plain text password to verify.
+ * @returns A promise that resolves to true if the password matches, otherwise false.
+ */
+UserSchema.methods.comparePassword = function (
+  candidatePassword: string
+): Promise<boolean> {
+  const user = this as IUser;
+  return bcrypt.compare(candidatePassword, user.password);
+};
+
+/**
  * Mongoose model for User, providing an interface to the User collection in the database.
  */
 export const User = mongoose.model<IUser>('User', UserSchema);
-
