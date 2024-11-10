@@ -36,6 +36,7 @@ const GET_FEEDINGS_QUERY = gql`
       id
       feedingTime
       amount
+      addedBy
       dha
       addedAt
       updatedAt

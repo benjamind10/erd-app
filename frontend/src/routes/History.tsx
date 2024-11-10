@@ -24,8 +24,7 @@ interface Feeding {
   feedingTime: string;
   amount: number;
   dha: boolean;
-  addedAt: string;
-  updatedAt: string;
+  addedBy: string; // Ensure this field is available
 }
 
 const History: React.FC = () => {
@@ -64,33 +63,22 @@ const History: React.FC = () => {
                 <TableCell>Feeding Time</TableCell>
                 <TableCell>Amount (oz)</TableCell>
                 <TableCell>DHA Included</TableCell>
-                <TableCell>Added At</TableCell>
-                <TableCell>Updated At</TableCell>
+                <TableCell>Added By</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {feedings.map(feeding => (
+              {feedings.map((feeding) => (
                 <TableRow key={feeding.id}>
                   <TableCell>
-                    {dayjs(parseInt(feeding.feedingTime))
+                    {dayjs
+                      .unix(parseInt(feeding.feedingTime))
                       .utc()
                       .local()
                       .format('YYYY-MM-DD hh:mm A')}
                   </TableCell>
                   <TableCell>{feeding.amount}</TableCell>
                   <TableCell>{feeding.dha ? 'Yes' : 'No'}</TableCell>
-                  <TableCell>
-                    {dayjs(parseInt(feeding.addedAt))
-                      .utc()
-                      .local()
-                      .format('YYYY-MM-DD hh:mm A')}
-                  </TableCell>
-                  <TableCell>
-                    {dayjs(parseInt(feeding.updatedAt))
-                      .utc()
-                      .local()
-                      .format('YYYY-MM-DD hh:mm A')}
-                  </TableCell>
+                  <TableCell>{feeding.addedBy}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

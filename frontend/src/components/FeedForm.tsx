@@ -24,14 +24,19 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
       typeof amount === 'string' && amount === '' ? 0 : Number(amount);
     if (feedingTime && parsedAmount > 0) {
       onSubmit(feedingTime.toISOString(), parsedAmount, dha);
+      handleClear();
+    } else {
+      alert("Amount can't be 0 or empty.");
     }
   };
+
 
   const handleClear = () => {
     setFeedingTime(dayjs());
     setAmount(0);
     setDha(false);
   };
+
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
