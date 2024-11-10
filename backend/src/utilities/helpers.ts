@@ -32,31 +32,21 @@ export const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-/**
- * Gets the user's time zone using the built-in Intl API.
- * @returns The user's IANA time zone, e.g., "America/New_York".
- */
-export const getUserTimeZone = (): string => {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
-};
 
 /**
- * Converts a UTC date to the user's local time with automatic DST handling.
- * @param utcDate - The UTC date string (e.g., "2024-11-09T06:00:00Z").
- * @returns A formatted date string in the user's local time, with DST applied.
+ * Converts a given date string to an ISO 8601 formatted string with the local timezone offset.
+ * @param dateStr - The date string in ISO format.
+ * @returns The date string with the calculated timezone offset.
  */
-export const getLocalTimeWithDST = (utcDate: string): string => {
-  const timeZone = getUserTimeZone();
-  const date = new Date(utcDate);
+export const formatWithTimeZoneOffset = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  const offsetMinutes = date.getTimezoneOffset();
+  const offsetSign = offsetMinutes > 0 ? '-' : '+';
+  const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60).toString().padStart(2, '0');
+  const offsetMins = (Math.abs(offsetMinutes) % 60).toString().padStart(2, '0');
+  const offsetString = `${offsetSign}${offsetHours}:${offsetMins}`;
 
-  // Format the date to the user's local time zone, automatically adjusting for DST
-  return date.toLocaleString('en-US', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+  // Format the date to include the offset
+  return `${date.toISOString().split('.')[0]}${offsetString}`;
 };
+
