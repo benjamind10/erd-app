@@ -10,12 +10,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import Navigation from './components/Navigation';
-//import Home from './routes/Home';
+// import Home from './routes/Home';
 import Feeding from './routes/Feeding';
 import Doody from './routes/Doody';
 import Blog from './routes/Blog';
 import Login from './routes/Login';
 import NotFound from './routes/NotFound';
+import TodayFeedings from './routes/TodayFeedings';
+import History from './routes/History';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
@@ -40,7 +42,7 @@ const App: React.FC = () => {
 
   // Toggle the theme mode and save preference to localStorage
   const toggleDarkMode = () => {
-    setDarkMode(prevMode => {
+    setDarkMode((prevMode) => {
       const newMode = !prevMode;
       localStorage.setItem('theme', newMode ? 'dark' : 'light');
       return newMode;
@@ -54,10 +56,10 @@ const App: React.FC = () => {
         <Router>
           <Navigation toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
           <Routes>
-            <Route path="/" element={<Navigate to="/feeding" replace />} />
+            <Route path="/" element={<Navigate to="/feeding/add" replace />} />
             <Route path="/login" element={<Login />} />
             <Route
-              path="/feeding"
+              path="/feeding/add"
               element={
                 <ProtectedRoute>
                   <Feeding />
@@ -77,6 +79,22 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Blog />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feeding/today"
+              element={
+                <ProtectedRoute>
+                  <TodayFeedings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feeding/history"
+              element={
+                <ProtectedRoute>
+                  <History />
                 </ProtectedRoute>
               }
             />

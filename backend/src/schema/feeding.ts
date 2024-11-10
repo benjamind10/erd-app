@@ -15,6 +15,7 @@ export const feedingTypeDefs = gql`
   type Query {
     getFeeding(id: ID!): Feeding
     getFeedings: [Feeding!]!
+    getTodaysFeedings: [Feeding!]!
   }
 
   type Mutation {

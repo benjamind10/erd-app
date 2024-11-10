@@ -11,8 +11,11 @@ import {
   ListItemButton,
   ListItemText,
   Button,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -26,6 +29,7 @@ const Navigation: React.FC<NavigationProps> = ({
   darkMode,
 }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // Anchor for Feeding Tracker submenu
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -38,32 +42,75 @@ const Navigation: React.FC<NavigationProps> = ({
     navigate('/login');
   };
 
+  // Open/close submenu
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const drawerContent = (
-    <Box
-      sx={{ width: 250 }}
-      role="presentation"
-      onClick={handleDrawerToggle}
-      onKeyDown={handleDrawerToggle}
-    >
+    <Box sx={{ width: 250 }} role="presentation">
       <List>
-        <ListItemButton component={Link} to="/">
+        <ListItemButton component={Link} to="/" onClick={handleDrawerToggle}>
           <ListItemText primary="Home" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/feeding">
+
+        {/* Feeding Tracker with submenu (Drawer version) */}
+        <ListItemButton onClick={handleMenuClick}>
           <ListItemText primary="Feeding Tracker" />
+          <ArrowDropDownIcon />
         </ListItemButton>
-        <ListItemButton component={Link} to="/doody">
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem
+            component={Link}
+            to="/feeding/add"
+            onClick={handleMenuClose}
+          >
+            Add
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            to="/feeding/today"
+            onClick={handleMenuClose}
+          >
+            Today
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            to="/feeding/history"
+            onClick={handleMenuClose}
+          >
+            History
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            to="/feeding/analytics"
+            onClick={handleMenuClose}
+          >
+            Analytics
+          </MenuItem>
+        </Menu>
+
+        <ListItemButton component={Link} to="/doody" onClick={handleDrawerToggle}>
           <ListItemText primary="Record Doody" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/blog">
+        <ListItemButton component={Link} to="/blog" onClick={handleDrawerToggle}>
           <ListItemText primary="Blog" />
         </ListItemButton>
+
         {isAuthenticated ? (
-          <ListItemButton onClick={handleLogout}>
+          <ListItemButton onClick={() => { handleLogout(); handleDrawerToggle(); }}>
             <ListItemText primary="Logout" />
           </ListItemButton>
         ) : (
-          <ListItemButton component={Link} to="/login">
+          <ListItemButton component={Link} to="/login" onClick={handleDrawerToggle}>
             <ListItemText primary="Login" />
           </ListItemButton>
         )}
@@ -98,9 +145,32 @@ const Navigation: React.FC<NavigationProps> = ({
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
-          <Button color="inherit" component={Link} to="/feeding">
+          {/* Feeding Tracker Dropdown */}
+          <Button
+            color="inherit"
+            endIcon={<ArrowDropDownIcon />}
+            onClick={handleMenuClick}
+          >
             Feeding Tracker
           </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem component={Link} to="/feeding/add" onClick={handleMenuClose}>
+              Add
+            </MenuItem>
+            <MenuItem component={Link} to="/feeding/today" onClick={handleMenuClose}>
+              Today
+            </MenuItem>
+            <MenuItem component={Link} to="/feeding/history" onClick={handleMenuClose}>
+              History
+            </MenuItem>
+            <MenuItem component={Link} to="/feeding/analytics" onClick={handleMenuClose}>
+              Analytics
+            </MenuItem>
+          </Menu>
           <Button color="inherit" component={Link} to="/doody">
             Doody Tracker
           </Button>

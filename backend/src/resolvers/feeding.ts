@@ -1,5 +1,6 @@
 import { Feeding, IFeeding } from '../models/feeding';
 import { IUser } from '../models/user';
+import dayjs from 'dayjs';
 
 export const feedingResolvers = {
   Query: {
@@ -32,6 +33,12 @@ export const feedingResolvers = {
         console.error('Error retrieving feeding records:', error);
         throw new Error('Failed to retrieve feeding records');
       }
+    },
+
+    getTodaysFeedings: async () => {
+      const startOfDay = dayjs().startOf('day').toDate();
+      const endOfDay = dayjs().endOf('day').toDate();
+      return Feeding.find({ feedingTime: { $gte: startOfDay, $lte: endOfDay } });
     },
   },
 

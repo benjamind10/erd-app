@@ -20,7 +20,7 @@ const handleSubmit = async (
 const Feeding: React.FC = () => {
   return (
     <Container>
-      <Typography variant="h4" sx={{ mt: 2 }}>
+      <Typography variant="h4" gutterBottom align='center'>
         Feeding Tracker
       </Typography>
       <FeedForm onSubmit={handleSubmit} />

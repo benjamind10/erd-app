@@ -1,4 +1,3 @@
-// src/pages/LoginPage.tsx
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import { login as loginApi } from '../api/auth';
