@@ -1,4 +1,3 @@
-// src/api/auth.ts
 import { gql } from '@apollo/client';
 import client from './client';
 
