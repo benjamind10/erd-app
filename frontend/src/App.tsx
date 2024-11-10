@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
@@ -40,7 +45,8 @@ const App: React.FC = () => {
         <Router>
           <Navigation toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
           <Routes>
-            <Route path="/" element={<Home />} />
+            {/*<Route path="/" element={<Home />} />*/}
+            <Route path="/" element={<Navigate to="/feeding" replace />} />
             <Route path="/feeding" element={<Feeding />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/doody" element={<Blog />} />
