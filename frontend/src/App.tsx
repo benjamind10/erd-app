@@ -12,6 +12,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Navigation from './components/Navigation';
 import Home from './routes/Home';
 import Feeding from './routes/Feeding';
+import Doody from './routes/Doody';
 import Blog from './routes/Blog';
 import Login from './routes/Login';
 
@@ -54,6 +55,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/feeding" element={<ProtectedRoute><Feeding /></ProtectedRoute>} />
+            <Route path="/doody" element={<ProtectedRoute><Doody /></ProtectedRoute>} />
             <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to={isAuthenticated() ? "/feeding" : "/login"} />} />
           </Routes>

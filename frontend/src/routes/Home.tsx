@@ -15,7 +15,7 @@ const Home: React.FC = () => {
         <Typography variant="h3" gutterBottom>
           Welcome to the Feeding Tracker App
         </Typography>
-        <Typography variant="h5" color="textSecondary" paragraph>
+        <Typography variant="h5" color="textSecondary">
           Our app helps you keep track of feeding times, amounts, and DHA
           inclusion for accurate records and better health monitoring.
         </Typography>
