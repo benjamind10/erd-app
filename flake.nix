@@ -25,18 +25,17 @@
             pkgs.nodePackages.typescript-language-server  # LSP server for TypeScript
             pkgs.nodePackages.eslint                     # Linting tool for JavaScript/TypeScript
             pkgs.nodePackages.prettier                   # Code formatter
-
-            # Heroku CLI
-            pkgs.heroku          # Heroku CLI for deploying and managing apps
           ];
 
           # Optional: Additional Environment Setup
           shellHook = ''
             # Initialize Node.js environment, Yarn version, etc.
             export PATH="$HOME/.yarn/bin:$HOME/.npm-global/bin:$PATH"
+            
+            # Set up a trap to kill all node processes on shell exit
+            trap 'pkill -P $$' EXIT
           '';
         };
       }
     );
 }
-

@@ -1,4 +1,3 @@
-// src/components/Navigation.tsx
 import React, { useState } from 'react';
 import {
   AppBar,

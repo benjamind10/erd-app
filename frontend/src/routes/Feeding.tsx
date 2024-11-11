@@ -39,7 +39,7 @@ const Feeding: React.FC = () => {
   };
 
   return (
-    <Container>
+    <Container maxWidth="sm" sx={{ textAlign: 'center', paddingY: 4 }}>
       <Typography variant="h4" gutterBottom align='center'>
         Feeding Tracker
       </Typography>
