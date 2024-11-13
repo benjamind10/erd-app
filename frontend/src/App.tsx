@@ -22,7 +22,7 @@ import Analytics from './routes/Analytics';
 
 const isAuthenticated = () => !!localStorage.getItem('token');
 
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: JSX.Element; }) => {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 };
 
