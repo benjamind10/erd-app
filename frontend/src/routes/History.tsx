@@ -1,23 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Container,
-} from '@mui/material';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import { Box, Typography, Container } from '@mui/material';
 import { fetchFeedings } from '../api/feeding';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import FeedingTable from '../components/FeedingTable';
 
 interface Feeding {
   id: string;
@@ -56,31 +40,7 @@ const History: React.FC = () => {
           gap: 2,
         }}
       >
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">Feeding Time</TableCell>
-                <TableCell align="center">Amount (oz)</TableCell>
-                <TableCell align="center">DHA Included</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {feedings.map((feeding) => (
-                <TableRow key={feeding.id}>
-                  <TableCell align="center">
-                    {dayjs(parseInt(feeding.feedingTime))
-                      .utc()
-                      .local()
-                      .format('YYYY-MM-DD hh:mm A')}
-                  </TableCell>
-                  <TableCell align="center">{feeding.amount}</TableCell>
-                  <TableCell align="center">{feeding.dha ? 'Yes' : 'No'}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <FeedingTable feedings={feedings} />
       </Box>
     </Container>
   );

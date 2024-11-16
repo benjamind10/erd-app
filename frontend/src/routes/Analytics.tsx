@@ -15,10 +15,9 @@ import {
 import { Line } from 'react-chartjs-2';
 import { fetchFeedings } from '../api/feeding';
 import { ChartOptions } from 'chart.js';
-import 'chartjs-adapter-date-fns'; // Ensure this import is present
-import dayjs from 'dayjs'; // Ensure dayjs is installed and imported
+import 'chartjs-adapter-date-fns';
+import dayjs from 'dayjs';
 
-// Register the necessary Chart.js components
 ChartJS.register(
   LineElement,
   CategoryScale,
@@ -32,7 +31,7 @@ ChartJS.register(
 );
 
 interface Feeding {
-  feedingTime: string; // Ensure this is a valid timestamp or date string
+  feedingTime: string;
   amount: number;
 }
 
@@ -83,30 +82,14 @@ const Analytics: React.FC = () => {
     );
   }
 
-  // Prepare data for the chart
   const chartData = {
     datasets: [
       {
         label: 'Feeding Amount (oz)',
-        data: feedings.map(feeding => {
-          let date: Date;
-          const timestamp = parseInt(feeding.feedingTime, 10);
-
-          if (!isNaN(timestamp)) {
-            // Adjust based on your timestamp format
-            // If in seconds, multiply by 1000
-            date = new Date(timestamp); // For milliseconds
-            // date = new Date(timestamp * 1000); // Uncomment if in seconds
-          } else {
-            // If feedingTime is an ISO string
-            date = new Date(feeding.feedingTime);
-          }
-
-          return {
-            x: date,
-            y: feeding.amount,
-          };
-        }),
+        data: feedings.map((feeding) => ({
+          x: new Date(Number(feeding.feedingTime)),
+          y: feeding.amount,
+        })),
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         fill: true,
@@ -120,7 +103,7 @@ const Analytics: React.FC = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'top', // Use string literals like "top", "bottom", etc.
       },
       tooltip: {
         callbacks: {
@@ -134,19 +117,15 @@ const Analytics: React.FC = () => {
       x: {
         type: 'time',
         time: {
-          unit: 'hour', // Change to 'hour' or 'minute' for more granularity
+          unit: 'hour',
           displayFormats: {
-            hour: 'MMM d, h a', // e.g., Jul 1, 12 PM
-            minute: 'MMM d, h:mm a', // e.g., Jul 1, 12:30 PM
+            hour: 'MMM d, h a',
           },
-          tooltipFormat: 'MMM d, h:mm a', // Format for tooltips
+          tooltipFormat: 'MMM d, h:mm a',
         },
         ticks: {
           autoSkip: true,
           maxTicksLimit: 20,
-          callback: function (value, index, ticks) {
-            return dayjs(value).format('MMM D, hA'); // e.g., Jul 1, 12PM
-          },
         },
         title: {
           display: true,

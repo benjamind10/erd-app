@@ -1,33 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  CircularProgress,
-  Container,
-} from '@mui/material';
+import { Box, CircularProgress, Container, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { fetchTodaysFeedings } from '../api/feeding';
+import FeedingCard from '../components/FeedingCard';
+import TodayMetrics from '../components/TodayMetrics';
 
-// Extend dayjs with UTC and Timezone plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-// Define the Feeding interface
 interface Feeding {
   id: string;
-  feedingTime: string; // Assuming this is a timestamp string
+  feedingTime: string;
   amount: number;
   dha: boolean;
 }
 
 const TodayFeedings: React.FC = () => {
-  // State to hold today's feedings
   const [feedings, setFeedings] = useState<Feeding[]>([]);
-  // State to manage loading status
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,7 +37,6 @@ const TodayFeedings: React.FC = () => {
   }, []);
 
   if (loading) {
-    // Display a loading spinner while fetching data
     return (
       <Box
         sx={{
@@ -62,7 +52,6 @@ const TodayFeedings: React.FC = () => {
   }
 
   if (feedings.length === 0) {
-    // Inform the user if there are no feedings for today
     return (
       <Container>
         <Typography variant="h4" gutterBottom align="center">
@@ -75,19 +64,11 @@ const TodayFeedings: React.FC = () => {
     );
   }
 
-  // Determine the user's timezone
   const userTimeZone = dayjs.tz.guess();
-
-  // Calculate the total amount fed
   const totalAmountFed = feedings.reduce((sum, feeding) => sum + feeding.amount, 0);
-
-  // Determine if DHA was active today (i.e., included in any feeding)
   const dhaActive = feedings.some((feeding) => feeding.dha);
-
-  // Calculate time since the last feed
   const lastFeedingTime = dayjs.utc(Number(feedings[feedings.length - 1].feedingTime)).tz(userTimeZone);
-  const timeSinceLastFeed = dayjs().diff(lastFeedingTime, 'hour', true); // true gives fractional hours
-  const isOverThreshold = timeSinceLastFeed > 3.5;
+  const timeSinceLastFeed = dayjs().diff(lastFeedingTime, 'hour', true);
 
   return (
     <Container>
@@ -103,64 +84,21 @@ const TodayFeedings: React.FC = () => {
         }}
       >
         {feedings.map((feeding) => (
-          <Box
-            key={feeding.id}
-            sx={{
-              flex: '1 1 300px',
-              maxWidth: '300px',
-              marginBottom: 2,
-            }}
-          >
-            <Card sx={{ height: '100%' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Feeding Time:{' '}
-                  {dayjs
-                    .utc(Number(feeding.feedingTime))
-                    .tz(userTimeZone)
-                    .format('hh:mm A')}
-                </Typography>
-                <Typography>Amount: {feeding.amount} oz</Typography>
-                <Typography>
-                  DHA Included: {feeding.dha ? 'Yes' : 'No'}
-                </Typography>
-              </CardContent>
-            </Card>
+          <Box key={feeding.id} sx={{ flex: '1 1 300px', maxWidth: '300px', marginBottom: 2 }}>
+            <FeedingCard
+              feedingTime={feeding.feedingTime}
+              amount={feeding.amount}
+              dha={feeding.dha}
+              timezone={userTimeZone}
+            />
           </Box>
         ))}
       </Box>
-
-      {/* 
-        Added Section:
-        Displays total amount fed, DHA status, and time since last feeding.
-      */}
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: 'bold', mb: 1 }}
-        >
-          Total Amount Fed: {totalAmountFed} oz
-        </Typography>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 'bold',
-            color: dhaActive ? 'green' : 'red',
-          }}
-        >
-          DHA: {dhaActive ? 'Yes' : 'No'}
-        </Typography>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 'bold',
-            color: isOverThreshold ? 'red' : 'inherit',
-            mt: 2,
-          }}
-        >
-          Time Since Last Feed: {timeSinceLastFeed.toFixed(1)} hours
-        </Typography>
-      </Box>
+      <TodayMetrics
+        totalAmountFed={totalAmountFed}
+        dhaActive={dhaActive}
+        timeSinceLastFeed={timeSinceLastFeed}
+      />
     </Container>
   );
 };

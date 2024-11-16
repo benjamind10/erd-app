@@ -28,6 +28,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element; }) => {
 
 const App: React.FC = () => {
   const initialMode = localStorage.getItem('theme') === 'dark';
+
   const [darkMode, setDarkMode] = useState(initialMode);
 
   // Create a theme object based on the mode
