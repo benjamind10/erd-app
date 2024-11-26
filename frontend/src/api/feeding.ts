@@ -8,7 +8,11 @@ const client = new ApolloClient({
 
 // Define the GraphQL mutation for creating a feeding entry
 const CREATE_FEEDING_MUTATION = gql`
-  mutation CreateFeeding($feedingTime: String!, $amount: Float!, $dha: Boolean!) {
+  mutation CreateFeeding(
+    $feedingTime: String!
+    $amount: Float!
+    $dha: Boolean!
+  ) {
     createFeeding(feedingTime: $feedingTime, amount: $amount, dha: $dha) {
       id
       feedingTime
@@ -44,6 +48,27 @@ const GET_FEEDINGS_QUERY = gql`
   }
 `;
 
+const UPDATE_FEEDING_MUTATION = gql`
+  mutation UpdateFeeding(
+    $id: ID!
+    $feedingTime: String!
+    $amount: Float
+    $dha: Boolean
+  ) {
+    updateFeeding(
+      id: $id
+      feedingTime: $feedingTime
+      amount: $amount
+      dha: $dha
+    ) {
+      id
+      feedingTime
+      amount
+      dha
+    }
+  }
+`;
+
 // Function to create a feeding entry
 export const createFeeding = async (
   feedingTime: string,
@@ -75,7 +100,7 @@ export const fetchTodaysFeedings = async () => {
     });
     return response.data.getTodaysFeedings;
   } catch (error) {
-    console.error('Error fetching today\'s feedings:', error);
+    console.error("Error fetching today's feedings:", error);
     throw error;
   }
 };
@@ -91,4 +116,17 @@ export const fetchFeedings = async () => {
     console.error('Error fetching feedings:', error);
     throw error;
   }
+};
+
+export const updateFeeding = async (
+  id: string,
+  feedingTime: string,
+  amount: number,
+  dha: boolean
+) => {
+  const response = await client.mutate({
+    mutation: UPDATE_FEEDING_MUTATION,
+    variables: { id, feedingTime, amount, dha },
+  });
+  return response.data.updateFeeding;
 };

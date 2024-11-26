@@ -1,9 +1,10 @@
+// src/routes/TodayFeedings.tsx
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Container, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { fetchTodaysFeedings } from '../api/feeding';
+import { fetchTodaysFeedings, updateFeeding } from '../api/feeding';
 import FeedingCard from '../components/FeedingCard';
 import TodayMetrics from '../components/TodayMetrics';
 
@@ -35,6 +36,17 @@ const TodayFeedings: React.FC = () => {
 
     getFeedings();
   }, []);
+
+  const handleUpdateFeeding = async (id: string, feedingTime: string, amount: number, dha: boolean) => {
+    try {
+      const updatedFeeding = await updateFeeding(id, feedingTime, amount, dha);
+      setFeedings((prevFeedings) =>
+        prevFeedings.map((feeding) => (feeding.id === id ? { ...feeding, ...updatedFeeding } : feeding))
+      );
+    } catch (error) {
+      console.error('Failed to update feeding:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -86,10 +98,12 @@ const TodayFeedings: React.FC = () => {
         {feedings.map((feeding) => (
           <Box key={feeding.id} sx={{ flex: '1 1 300px', maxWidth: '300px', marginBottom: 2 }}>
             <FeedingCard
+              id={feeding.id}
               feedingTime={feeding.feedingTime}
               amount={feeding.amount}
               dha={feeding.dha}
               timezone={userTimeZone}
+              onUpdate={handleUpdateFeeding}
             />
           </Box>
         ))}
