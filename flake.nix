@@ -2,10 +2,7 @@
   description = "Frontend development environment with React, TypeScript, ESLint, Yarn, and Heroku CLI";
 
   inputs = {
-    # Use the latest Nix Packages
     nixpkgs.url = "github:NixOS/nixpkgs";
-
-    # flake-utils for handling multiple systems and more organized outputs
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -16,24 +13,27 @@
       in {
         devShell = pkgs.mkShell {
           buildInputs = [
-            # Frontend Development Tools
-            pkgs.nodejs               # Node.js runtime for React
-            pkgs.yarn                 # Yarn package manager
-            pkgs.typescript           # TypeScript language support
-
-            # LSP Servers and Linters
-            pkgs.nodePackages.typescript-language-server  # LSP server for TypeScript
-            pkgs.nodePackages.eslint                     # Linting tool for JavaScript/TypeScript
-            pkgs.nodePackages.prettier                   # Code formatter
+            pkgs.nodejs-18_x                       # Node.js runtime
+            pkgs.yarn                              # Yarn package manager
+            pkgs.typescript                        # TypeScript
+            pkgs.nodePackages.typescript-language-server  # TypeScript LSP
+            pkgs.nodePackages.eslint              # ESLint
+            pkgs.nodePackages.prettier            # Prettier
           ];
 
-          # Optional: Additional Environment Setup
           shellHook = ''
-            # Initialize Node.js environment, Yarn version, etc.
+            echo "Starting frontend development environment..."
+
+            # Ensure Yarn and npm global directories exist
+            mkdir -p $HOME/.yarn/bin $HOME/.npm-global/bin || true
+
+            # Add Yarn/npm global directories to PATH
             export PATH="$HOME/.yarn/bin:$HOME/.npm-global/bin:$PATH"
-            
-            # Set up a trap to kill all node processes on shell exit
-            trap 'pkill -P $$' EXIT
+
+            # Prevent errors from killing the shell
+            trap 'pkill -P $$ || true' EXIT
+
+            echo "Environment ready. Run 'node --version' to verify."
           '';
         };
       }
