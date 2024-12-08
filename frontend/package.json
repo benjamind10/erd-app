@@ -36,7 +36,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start --host 0.0.0.0",
     "dev": "nodemon --exec \"npm start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",

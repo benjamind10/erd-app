@@ -1,46 +1,49 @@
-import { ApolloServer, Config } from 'apollo-server';
-import { getUserFromAuthHeader } from './auth';
+import { ApolloServer } from 'apollo-server';
+import { authTypeDefs } from '../schema/auth';
+import { feedingResolvers } from '../resolvers/feeding';
+import { feedingTypeDefs } from '../schema/feeding';
+import { verifyToken } from './jwt';
+import mongoose from 'mongoose';
+import { authResolvers } from '../resolvers/auth';
+import { config } from 'dotenv';
+import cors from 'cors';
+config();
 
-/**
- * Creates an instance of ApolloServer with the provided options,
- * adding a mock user to the context in development mode.
- * @param options - The Apollo Server configuration object.
- * @returns A configured ApolloServer instance.
- */
-export const createApolloServer = (options: Config): ApolloServer => {
-  const isDevelopment = process.env.NODE_ENV !== 'production';
+const { MONGODB_URI } = process.env;
 
-  const server = new ApolloServer({
-    ...options,
-    context: ({ req }) => {
-      if (isDevelopment) {
-        // In development mode, add a mock user to the context
-        return {
-          user: { id: '672fd6b8be72f4bf89b5b08f' },
-        };
+console.log(process.env.MONGODB_URI);
+
+mongoose
+  .connect(process.env.MONGODB_URI || '')
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(error => console.error('❌ MongoDB connection error:', error));
+
+// Apollo Server setup
+const server = new ApolloServer({
+  typeDefs: [authTypeDefs, feedingTypeDefs],
+  resolvers: [authResolvers, feedingResolvers],
+  context: ({ req }) => {
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.startsWith('Bearer ')
+      ? authHeader.split(' ')[1]
+      : null;
+
+    if (token) {
+      try {
+        const user = verifyToken(token);
+        return { user };
+      } catch {
+        throw new Error('Invalid or expired token');
       }
+    }
 
-      const authHeader = req.headers.authorization || '';
-      const user = getUserFromAuthHeader(authHeader);
+    return {};
+  },
+  cors: {
+    origin: 'http://192.168.1.254:3000', // Allow requests from your frontend
+    credentials: true, // Enable sending cookies or authorization headers
+  },
+});
 
-      if (!user) {
-        throw new Error('Authentication required');
-      }
-
-      return { user };
-    },
-  });
-
-  return server;
-};
-
-/**
- * Starts the ApolloServer instance.
- * @param server - The ApolloServer instance to start.
- */
-export const startApolloServer = async (
-  server: ApolloServer
-): Promise<void> => {
-  const { url } = await server.listen();
-  console.log(`🚀 Server ready at ${url}`);
-};
+// Export the server for use in `index.ts`
+export default server;

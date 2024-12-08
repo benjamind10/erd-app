@@ -12,8 +12,12 @@ export const authTypeDefs = gql`
     user: User!
   }
 
+  type Query {
+    _placeholder: String # Placeholder query to satisfy Apollo's requirements
+  }
+
   type Mutation {
     login(email: String!, password: String!): AuthPayload!
+    signup(name: String!, email: String!, password: String!): AuthPayload!
   }
 `;
-
