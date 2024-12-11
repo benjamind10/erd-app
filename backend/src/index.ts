@@ -1,47 +1,41 @@
-import { config } from 'dotenv';
-config();
-
-import * as R from 'ramda';
-
-import { isNilOrEmpty, exitWithError } from './utilities/helpers';
-import { connectToMongoDB } from './utilities/database';
-import { createApolloServer, startApolloServer } from './utilities/server';
-
-import { typeDefs } from './schema';
+import { ApolloServer } from 'apollo-server';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import { resolvers } from './resolvers';
+import { typeDefs } from './schema';
 
-// Load MongoDB URI from environment variables
-const { MONGODB_URI } = process.env;
+// Load environment variables
+dotenv.config();
 
-/**
- * Main function to initialize and start the server.
- * This function checks for the necessary environment variables,
- * connects to the MongoDB database, and starts the Apollo Server.
- */
+const { MONGODB_URI, PORT } = process.env;
+
+// Ensure essential environment variables are loaded
+if (!MONGODB_URI) {
+  throw new Error('❌ MONGODB_URI is not defined in the environment variables');
+}
+
+// Main function to initialize and start the server
 const startServer = async () => {
-  // Check if the MongoDB URI is defined
-  if (isNilOrEmpty(MONGODB_URI)) {
-    exitWithError('❌ MONGODB_URI is not defined in the environment variables');
-  }
-
   try {
-    /**
-     * Compose server initialization steps using Ramda's pipeWith.
-     * The steps are asynchronous and involve:
-     * 1. Connecting to MongoDB.
-     * 2. Creating the Apollo Server with the specified schema and resolvers.
-     * 3. Starting the Apollo Server.
-     */
-    await R.pipeWith(R.andThen, [
-      connectToMongoDB,
-      () => createApolloServer({ typeDefs, resolvers }),
-      startApolloServer,
-    ])(MONGODB_URI as string);
+    // Connect to MongoDB
+    console.log('Connecting to MongoDB...');
+    await mongoose.connect(MONGODB_URI);
+    console.log('✅ Connected to MongoDB');
+
+    // Create Apollo Server
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+    });
+
+    // Start the server
+    const { url } = await server.listen({ port: PORT || 4000 });
+    console.log(`🚀 Server ready at ${url}`);
   } catch (error) {
     console.error('❌ Error starting the server:', error);
+    process.exit(1);
   }
 };
 
 // Start the server
 startServer();
-

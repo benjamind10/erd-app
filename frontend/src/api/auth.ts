@@ -22,6 +22,8 @@ export const login = async (email: string, password: string) => {
       variables: { email, password },
     });
 
+    console.log(response.data);
+
     const { token, user } = response.data.login;
     localStorage.setItem('token', token);
 

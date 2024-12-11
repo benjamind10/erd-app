@@ -12,8 +12,12 @@ export const authTypeDefs = gql`
     user: User!
   }
 
+  type Query {
+    me: User
+  }
+
   type Mutation {
-    login(email: String!, password: String!): AuthPayload!
+    register(name: String!, email: String!, password: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
   }
 `;
-

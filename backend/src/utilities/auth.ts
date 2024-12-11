@@ -1,26 +1,46 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { IUser } from '../models/user';
 
-const JWT_SECRET = process.env.JWT_SECRET!
+// Load environment variables
+dotenv.config();
+
+const { JWT_SECRET, JWT_EXPIRES_IN } = process.env;
+
+if (!JWT_SECRET || !JWT_EXPIRES_IN) {
+  throw new Error(
+    'Missing JWT_SECRET or JWT_EXPIRES_IN in environment variables'
+  );
+}
 
 /**
- * Extracts and verifies a JWT from the authorization header to get the user data.
- * @param authHeader - The authorization header from the request, expected in the format 'Bearer <token>'.
- * @returns The decoded user object if the token is valid; otherwise, null.
+ * Generates a JWT token for the given user.
+ * @param user - The user object to encode in the token.
+ * @returns The JWT token.
  */
-export const getUserFromAuthHeader = (authHeader: string): { id: string } | null => {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.warn('No authorization header or incorrect format');
-    return null;
-  }
+export const generateToken = (user: IUser): string => {
+  const payload = { id: user.id, email: user.email };
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+};
 
+/**
+ * Verifies a JWT token and returns the decoded payload.
+ * @param token - The JWT token to verify.
+ * @returns The decoded token payload.
+ */
+export const verifyToken = (token: string): any => {
+  return jwt.verify(token, JWT_SECRET);
+};
+
+/**
+ * Extracts and verifies the JWT token from the Authorization header.
+ * @param authHeader - The Authorization header.
+ * @returns The user payload.
+ */
+export const getUserFromAuthHeader = (authHeader: string): any => {
+  if (!authHeader.startsWith('Bearer ')) {
+    throw new Error('Invalid Authorization header format');
+  }
   const token = authHeader.split(' ')[1];
-
-  try {
-    // Verify and decode the JWT token
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    return decoded;
-  } catch (error) {
-    console.error('Failed to authenticate token:', error);
-    return null;
-  }
+  return verifyToken(token);
 };
