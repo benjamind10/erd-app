@@ -27,7 +27,6 @@ export const blogResolvers: IResolvers = {
           ...blog.toObject(),
           id: blog._id.toString(),
           createdAt: blog.createdAt.toISOString(),
-          // Ensure that the image field contains only pure Base64 data
           image: blog.image ? blog.image.toString() : null,
         }));
       } catch (error) {

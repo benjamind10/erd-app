@@ -25,6 +25,5 @@ export const authTypeDefs = gql`
       roles: [String]
     ): AuthPayload
     login(email: String!, password: String!): AuthPayload
-    updateUserRoles(userId: ID!, roles: [String!]!): User
   }
 `;

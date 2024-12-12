@@ -1,23 +1,46 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { IUser } from '../models/user';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+// Load environment variables
+dotenv.config();
+
+const { JWT_SECRET, JWT_EXPIRES_IN } = process.env;
+
+if (!JWT_SECRET || !JWT_EXPIRES_IN) {
+  throw new Error(
+    'Missing JWT_SECRET or JWT_EXPIRES_IN in environment variables'
+  );
+}
 
 /**
- * Generates a JWT for the given user ID.
- *
- * @param userId - The ID of the user to include in the token.
- * @returns The generated JWT token.
+ * Generates a JWT token for the given user.
+ * @param user - The user object to encode in the token.
+ * @returns The JWT token.
  */
-export const generateToken = (userId: string): string => {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1h' });
+export const generateToken = (user: IUser): string => {
+  const payload = { id: user.id, email: user.email, roles: user.roles };
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
 /**
- * Verifies and decodes a JWT.
- *
+ * Verifies a JWT token and returns the decoded payload.
  * @param token - The JWT token to verify.
- * @returns The decoded payload if the token is valid.
+ * @returns The decoded token payload.
  */
-export const verifyToken = (token: string): { id: string } => {
-  return jwt.verify(token, JWT_SECRET) as { id: string };
+export const verifyToken = (token: string): any => {
+  return jwt.verify(token, JWT_SECRET);
+};
+
+/**
+ * Extracts and verifies the JWT token from the Authorization header.
+ * @param authHeader - The Authorization header.
+ * @returns The user payload.
+ */
+export const getUserFromAuthHeader = (authHeader: string): any => {
+  if (!authHeader.startsWith('Bearer ')) {
+    throw new Error('Invalid Authorization header format');
+  }
+  const token = authHeader.split(' ')[1];
+  return verifyToken(token);
 };
