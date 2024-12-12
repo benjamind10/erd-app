@@ -6,6 +6,7 @@ import { IUser } from '../models/user';
 dotenv.config();
 
 const { JWT_SECRET, JWT_EXPIRES_IN } = process.env;
+console.log(JWT_EXPIRES_IN, JWT_SECRET);
 
 if (!JWT_SECRET || !JWT_EXPIRES_IN) {
   throw new Error(
