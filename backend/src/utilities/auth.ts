@@ -19,7 +19,7 @@ if (!JWT_SECRET || !JWT_EXPIRES_IN) {
  * @returns The JWT token.
  */
 export const generateToken = (user: IUser): string => {
-  const payload = { id: user.id, email: user.email };
+  const payload = { id: user.id, email: user.email, roles: user.roles };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 

@@ -5,6 +5,7 @@ export const authTypeDefs = gql`
     id: ID!
     name: String!
     email: String!
+    roles: [String!]!
   }
 
   type AuthPayload {
@@ -17,7 +18,13 @@ export const authTypeDefs = gql`
   }
 
   type Mutation {
-    register(name: String!, email: String!, password: String!): AuthPayload
+    register(
+      name: String!
+      email: String!
+      password: String!
+      roles: [String]
+    ): AuthPayload
     login(email: String!, password: String!): AuthPayload
+    updateUserRoles(userId: ID!, roles: [String!]!): User
   }
 `;

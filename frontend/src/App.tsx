@@ -10,7 +10,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import Navigation from './components/Navigation';
-// import Home from './routes/Home';
 import Feeding from './routes/Feeding';
 import Doody from './routes/Doody';
 import Blog from './routes/Blog';
@@ -19,13 +18,38 @@ import NotFound from './routes/NotFound';
 import TodayFeedings from './routes/TodayFeedings';
 import History from './routes/History';
 import Analytics from './routes/Analytics';
+import Unauthorized from './routes/Unauthorized';
 
+// Helper function to get roles from localStorage
+const getRoles = (): string[] => {
+  const roles = localStorage.getItem('roles');
+  return roles ? JSON.parse(roles) : [];
+};
+
+// Function to check if the user is authenticated
 const isAuthenticated = () => !!localStorage.getItem('token');
 
- 
+// ProtectedRoute Component
+const ProtectedRoute = ({
+  children,
+  requiredRoles = [],
+}: {
+  children: JSX.Element;
+  requiredRoles?: string[];
+}) => {
+  // Check authentication
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
 
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  // Check authorization based on roles
+  const userRoles = getRoles();
+  if (requiredRoles.length > 0 && !requiredRoles.some((role) => userRoles.includes(role))) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  // Render the protected component
+  return children;
 };
 
 const App: React.FC = () => {
@@ -46,7 +70,7 @@ const App: React.FC = () => {
 
   // Toggle the theme mode and save preference to localStorage
   const toggleDarkMode = () => {
-    setDarkMode(prevMode => {
+    setDarkMode((prevMode) => {
       const newMode = !prevMode;
       localStorage.setItem('theme', newMode ? 'dark' : 'light');
       return newMode;
@@ -62,10 +86,11 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/feeding/add" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
             <Route
               path="/feeding/add"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRoles={['admin']}>
                   <Feeding />
                 </ProtectedRoute>
               }
@@ -73,7 +98,7 @@ const App: React.FC = () => {
             <Route
               path="/doody"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRoles={['admin']}>
                   <Doody />
                 </ProtectedRoute>
               }
@@ -81,7 +106,7 @@ const App: React.FC = () => {
             <Route
               path="/blog"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRoles={['user', 'admin']}>
                   <Blog />
                 </ProtectedRoute>
               }
@@ -89,7 +114,7 @@ const App: React.FC = () => {
             <Route
               path="/feeding/today"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRoles={['admin']}>
                   <TodayFeedings />
                 </ProtectedRoute>
               }
@@ -97,7 +122,7 @@ const App: React.FC = () => {
             <Route
               path="/feeding/history"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRoles={['admin']}>
                   <History />
                 </ProtectedRoute>
               }
@@ -105,7 +130,7 @@ const App: React.FC = () => {
             <Route
               path="/feeding/analytics"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRoles={['admin']}>
                   <Analytics />
                 </ProtectedRoute>
               }

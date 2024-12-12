@@ -11,10 +11,11 @@ interface RegisterArgs {
   name: string;
   email: string;
   password: string;
+  roles?: string[];
 }
 
 interface Context {
-  user?: { id: string }; // Add more fields if necessary
+  user?: { id: string; roles: string[] }; // Include roles in the user context
 }
 
 export const authResolvers: IResolvers = {
@@ -41,14 +42,14 @@ export const authResolvers: IResolvers = {
      * @returns An object containing the JWT token and user details.
      */
     register: async (_: unknown, args: RegisterArgs) => {
-      const { name, email, password } = args;
+      const { name, email, password, roles = ['user'] } = args;
 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         throw new Error('Email is already in use');
       }
 
-      const user = new User({ name, email, password });
+      const user = new User({ name, email, password, roles });
       await user.save();
 
       return {
@@ -87,6 +88,39 @@ export const authResolvers: IResolvers = {
         console.error('Error in login resolver:', error);
         throw error;
       }
+    },
+
+    /**
+     * Mutation to update user roles.
+     * @param _ - The parent object (not used here).
+     * @param args - The input arguments for updating user roles.
+     * @param context - The context object containing the authenticated user.
+     * @returns The updated user's details.
+     */
+    updateUserRoles: async (
+      _: unknown,
+      args: { userId: string; roles: string[] },
+      context: Context
+    ) => {
+      // Optional: Check if the requesting user has admin privileges
+      if (!context.user || !context.user.roles.includes('admin')) {
+        throw new Error('Unauthorized');
+      }
+
+      const { userId, roles } = args;
+
+      // Update the user's roles
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { roles },
+        { new: true } // Return the updated user
+      );
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return user;
     },
   },
 };
