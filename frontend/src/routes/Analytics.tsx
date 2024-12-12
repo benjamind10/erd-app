@@ -86,7 +86,7 @@ const Analytics: React.FC = () => {
     datasets: [
       {
         label: 'Feeding Amount (oz)',
-        data: feedings.map((feeding) => ({
+        data: feedings.map(feeding => ({
           x: new Date(Number(feeding.feedingTime)),
           y: feeding.amount,
         })),

@@ -5,7 +5,7 @@ const Blog: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" sx={{ mt: 2 }}>
-        Welcome to the ERD Doody Calls 
+        Welcome to the ERD Doody Calls
       </Typography>
     </Container>
   );

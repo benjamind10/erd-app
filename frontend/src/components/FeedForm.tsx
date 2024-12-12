@@ -30,13 +30,11 @@ const FeedForm: React.FC<FeedFormProps> = ({ onSubmit }) => {
     }
   };
 
-
   const handleClear = () => {
     setFeedingTime(dayjs());
     setAmount(0);
     setDha(false);
   };
-
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>

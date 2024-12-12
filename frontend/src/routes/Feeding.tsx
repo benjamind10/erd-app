@@ -40,7 +40,7 @@ const Feeding: React.FC = () => {
 
   return (
     <Container maxWidth="sm" sx={{ textAlign: 'center', paddingY: 4 }}>
-      <Typography variant="h4" gutterBottom align='center'>
+      <Typography variant="h4" gutterBottom align="center">
         Feeding Tracker
       </Typography>
       <FeedForm onSubmit={handleSubmit} />
@@ -57,7 +57,11 @@ const Feeding: React.FC = () => {
             {errorMessage}
           </Alert>
         ) : (
-          <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
             Feeding record added successfully!
           </Alert>
         )}
