@@ -33,5 +33,6 @@ export const userTypeDefs = gql`
     ): User! # Update multiple fields
     forceChangePassword(id: ID!, password: String!): Boolean! # Force password change
     deleteUser(id: ID!): Boolean!
+    updateUserRoles(userId: ID!, roles: [String!]!): User
   }
 `;

@@ -7,7 +7,7 @@ import { typeDefs } from './schema';
 // Load environment variables
 dotenv.config();
 
-const { MONGODB_URI, PORT } = process.env;
+const { MONGODB_URI, PORT, FRONTEND_URL } = process.env;
 
 // Ensure essential environment variables are loaded
 if (!MONGODB_URI) {
@@ -27,7 +27,7 @@ const startServer = async () => {
       typeDefs,
       resolvers,
       cors: {
-        origin: 'http://192.168.1.254:3000', // Allow requests from your frontend
+        origin: FRONTEND_URL,
         credentials: true,
       },
     });

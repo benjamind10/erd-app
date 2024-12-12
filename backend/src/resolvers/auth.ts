@@ -67,7 +67,6 @@ export const authResolvers: IResolvers = {
     login: async (_: unknown, args: LoginArgs) => {
       const { email, password } = args;
 
-      console.log('test');
       try {
         console.log(`Login attempt: email=${email}`);
 
@@ -88,8 +87,6 @@ export const authResolvers: IResolvers = {
         console.error('Error in login resolver:', error);
         throw error;
       }
-
-      return user;
     },
 
     /**
@@ -99,48 +96,30 @@ export const authResolvers: IResolvers = {
      * @param context - The context object containing the authenticated user.
      * @returns The updated user's details.
      */
-    signup: async (
-      _parent: undefined,
-      {
-        name,
-        email,
-        password,
-      }: { name: string; email: string; password: string }
+    updateUserRoles: async (
+      _: unknown,
+      args: { userId: string; roles: string[] },
+      context: Context
     ) => {
-      try {
-        console.log('Attempting signup for email:', email);
-
-        // Check if the email is already in use
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-          console.error('User already exists for email:', email);
-          throw new Error('User already exists');
-        }
-
-        // Hash the password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create a new user
-        const newUser = new User({ name, email, password: hashedPassword });
-        await newUser.save();
-
-        // Generate JWT token
-        const token = generateToken(newUser._id.toString());
-
-        console.log('Signup successful for user:', newUser.email);
-
-        return {
-          token,
-          user: {
-            id: newUser._id,
-            name: newUser.name,
-            email: newUser.email,
-          },
-        };
-      } catch (error: any) {
-        console.error('Error in signup mutation:', error.message);
-        throw new Error('Signup failed: ' + error.message);
+      // Optional: Check if the requesting user has admin privileges
+      if (!context.user || !context.user.roles.includes('admin')) {
+        throw new Error('Unauthorized');
       }
+
+      const { userId, roles } = args;
+
+      // Update the user's roles
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { roles },
+        { new: true } // Return the updated user
+      );
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return user;
     },
   },
 };
