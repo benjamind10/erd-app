@@ -62,7 +62,6 @@ const App: React.FC = () => {
 
   const [darkMode, setDarkMode] = useState(initialMode);
 
-  console.log(getRoles());
   // Create a theme object based on the mode
   const theme = useMemo(
     () =>
@@ -98,7 +97,14 @@ const App: React.FC = () => {
             }}
           >
             <Routes>
-              <Route path="/blog" element={<Blog />} />
+              <Route
+                path="/blog"
+                element={
+                  <ProtectedRoute>
+                    <Blog />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/admin/blogs"
                 element={
@@ -115,7 +121,14 @@ const App: React.FC = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/" element={<Navigate to="/blog" replace />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Navigate to="/blog" replace />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/login" element={<Login />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route
@@ -126,14 +139,6 @@ const App: React.FC = () => {
                   </ProtectedRoute>
                 }
               />
-              {/* <Route
-                path="/doody"
-                element={
-                  <ProtectedRoute requiredRoles={['admin']}>
-                    <Doody />
-                  </ProtectedRoute>
-                }
-              /> */}
               <Route
                 path="/feeding/today"
                 element={
