@@ -7,5 +7,7 @@
     "build": "cd frontend && npm run build && cd ../backend && npm install && npx tsc",
     "start": "node backend/dist/index.js"
   },
-  "dependencies": {}
+  "dependencies": {
+    "graphql-upload": "^17.0.0"
+  }
 }

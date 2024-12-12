@@ -19,6 +19,7 @@ import TodayFeedings from './routes/TodayFeedings';
 import History from './routes/History';
 import Analytics from './routes/Analytics';
 import Unauthorized from './routes/Unauthorized';
+import BlogAdmin from './routes/BlogAdmin';
 
 // Helper function to get roles from localStorage
 const getRoles = (): string[] => {
@@ -44,7 +45,10 @@ const ProtectedRoute = ({
 
   // Check authorization based on roles
   const userRoles = getRoles();
-  if (requiredRoles.length > 0 && !requiredRoles.some((role) => userRoles.includes(role))) {
+  if (
+    requiredRoles.length > 0 &&
+    !requiredRoles.some(role => userRoles.includes(role))
+  ) {
     return <Navigate to="/unauthorized" replace />;
   }
 
@@ -70,7 +74,7 @@ const App: React.FC = () => {
 
   // Toggle the theme mode and save preference to localStorage
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
+    setDarkMode(prevMode => {
       const newMode = !prevMode;
       localStorage.setItem('theme', newMode ? 'dark' : 'light');
       return newMode;
@@ -111,6 +115,15 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/blogs"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <BlogAdmin />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/feeding/today"
               element={

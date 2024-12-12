@@ -20,5 +20,6 @@ export const blogTypeDefs = gql`
   type Mutation {
     createBlog(title: String!, content: String!, image: Upload): Blog!
     deleteBlog(id: ID!): Blog!
+    updateBlog(id: ID!, title: String!, content: String!, image: String): Blog!
   }
 `;

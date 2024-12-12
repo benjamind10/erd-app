@@ -43,3 +43,28 @@ export const DELETE_BLOG = gql`
     }
   }
 `;
+
+export const MANAGE_COMMENTS = gql`
+  mutation ManageComments($blogId: ID!, $comments: [String!]!) {
+    manageComments(blogId: $blogId, comments: $comments) {
+      id
+      comments
+    }
+  }
+`;
+
+export const UPDATE_BLOG = gql`
+  mutation UpdateBlog(
+    $id: ID!
+    $title: String!
+    $content: String!
+    $image: String
+  ) {
+    updateBlog(id: $id, title: $title, content: $content, image: $image) {
+      id
+      title
+      content
+      createdAt
+    }
+  }
+`;
