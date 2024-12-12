@@ -7,11 +7,13 @@ import bcrypt from 'bcrypt';
  * @property name - The name of the user.
  * @property email - The email of the user, which is unique and stored in lowercase.
  * @property password - The hashed password of the user.
+ * @property roles - An array of roles assigned to the user.
  */
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  roles: string[];
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -20,6 +22,7 @@ const userFields = {
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
+  roles: { type: [String], default: ['user'] }, // Default role is 'user'
 };
 
 // Create a Mongoose schema for the User model

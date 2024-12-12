@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,7 +10,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import Navigation from './components/Navigation';
-// import Home from './routes/Home';
 import Feeding from './routes/Feeding';
 import Doody from './routes/Doody';
 import Blog from './routes/Blog';
@@ -19,13 +18,43 @@ import NotFound from './routes/NotFound';
 import TodayFeedings from './routes/TodayFeedings';
 import History from './routes/History';
 import Analytics from './routes/Analytics';
+import Unauthorized from './routes/Unauthorized';
+import BlogAdmin from './routes/BlogAdmin';
+import AdminSidebar from './components/AdminSidebar';
 
+// Helper function to get roles from localStorage
+const getRoles = (): string[] => {
+  const roles = localStorage.getItem('roles');
+  return roles ? JSON.parse(roles) : [];
+};
+
+// Function to check if the user is authenticated
 const isAuthenticated = () => !!localStorage.getItem('token');
 
- 
+// ProtectedRoute Component
+const ProtectedRoute = ({
+  children,
+  requiredRoles = [],
+}: {
+  children: JSX.Element;
+  requiredRoles?: string[];
+}) => {
+  // Check authentication
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
 
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  // Check authorization based on roles
+  const userRoles = getRoles();
+  if (
+    requiredRoles.length > 0 &&
+    !requiredRoles.some(role => userRoles.includes(role))
+  ) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  // Render the protected component
+  return children;
 };
 
 const App: React.FC = () => {
@@ -33,6 +62,7 @@ const App: React.FC = () => {
 
   const [darkMode, setDarkMode] = useState(initialMode);
 
+  console.log(getRoles());
   // Create a theme object based on the mode
   const theme = useMemo(
     () =>
@@ -59,59 +89,78 @@ const App: React.FC = () => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Router>
           <Navigation toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-          <Routes>
-            <Route path="/" element={<Navigate to="/feeding/add" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/feeding/add"
-              element={
-                <ProtectedRoute>
-                  <Feeding />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/doody"
-              element={
-                <ProtectedRoute>
-                  <Doody />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/blog"
-              element={
-                <ProtectedRoute>
-                  <Blog />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/feeding/today"
-              element={
-                <ProtectedRoute>
-                  <TodayFeedings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/feeding/history"
-              element={
-                <ProtectedRoute>
-                  <History />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/feeding/analytics"
-              element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          {/* Render AdminSidebar only for admin users */}
+          {getRoles().includes('admin') && <AdminSidebar />}
+          <Box
+            sx={{
+              marginLeft: getRoles().includes('admin') ? '35px' : '0',
+              paddingTop: '64px',
+            }}
+          >
+            <Routes>
+              <Route path="/blog" element={<Blog />} />
+              <Route
+                path="/admin/blogs"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <BlogAdmin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <BlogAdmin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/" element={<Navigate to="/blog" replace />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              <Route
+                path="/feeding/add"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <Feeding />
+                  </ProtectedRoute>
+                }
+              />
+              {/* <Route
+                path="/doody"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <Doody />
+                  </ProtectedRoute>
+                }
+              /> */}
+              <Route
+                path="/feeding/today"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <TodayFeedings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/feeding/history"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <History />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/feeding/analytics"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Box>
         </Router>
       </LocalizationProvider>
     </ThemeProvider>

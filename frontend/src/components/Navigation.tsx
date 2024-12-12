@@ -97,19 +97,36 @@ const Navigation: React.FC<NavigationProps> = ({
           </MenuItem>
         </Menu>
 
-        <ListItemButton component={Link} to="/doody" onClick={handleDrawerToggle}>
+        {/* <ListItemButton
+          component={Link}
+          to="/doody"
+          onClick={handleDrawerToggle}
+        >
           <ListItemText primary="Record Doody" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/blog" onClick={handleDrawerToggle}>
+        <ListItemButton
+          component={Link}
+          to="/blog"
+          onClick={handleDrawerToggle}
+        >
           <ListItemText primary="Blog" />
-        </ListItemButton>
+        </ListItemButton> */}
 
         {isAuthenticated ? (
-          <ListItemButton onClick={() => { handleLogout(); handleDrawerToggle(); }}>
+          <ListItemButton
+            onClick={() => {
+              handleLogout();
+              handleDrawerToggle();
+            }}
+          >
             <ListItemText primary="Logout" />
           </ListItemButton>
         ) : (
-          <ListItemButton component={Link} to="/login" onClick={handleDrawerToggle}>
+          <ListItemButton
+            component={Link}
+            to="/login"
+            onClick={handleDrawerToggle}
+          >
             <ListItemText primary="Login" />
           </ListItemButton>
         )}
@@ -118,7 +135,7 @@ const Navigation: React.FC<NavigationProps> = ({
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           ERD App
@@ -157,22 +174,38 @@ const Navigation: React.FC<NavigationProps> = ({
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem component={Link} to="/feeding/add" onClick={handleMenuClose}>
+            <MenuItem
+              component={Link}
+              to="/feeding/add"
+              onClick={handleMenuClose}
+            >
               Add
             </MenuItem>
-            <MenuItem component={Link} to="/feeding/today" onClick={handleMenuClose}>
+            <MenuItem
+              component={Link}
+              to="/feeding/today"
+              onClick={handleMenuClose}
+            >
               Today
             </MenuItem>
-            <MenuItem component={Link} to="/feeding/history" onClick={handleMenuClose}>
+            <MenuItem
+              component={Link}
+              to="/feeding/history"
+              onClick={handleMenuClose}
+            >
               History
             </MenuItem>
-            <MenuItem component={Link} to="/feeding/analytics" onClick={handleMenuClose}>
+            <MenuItem
+              component={Link}
+              to="/feeding/analytics"
+              onClick={handleMenuClose}
+            >
               Analytics
             </MenuItem>
           </Menu>
-          <Button color="inherit" component={Link} to="/doody">
+          {/* <Button color="inherit" component={Link} to="/doody">
             Doody Tracker
-          </Button>
+          </Button> */}
           <Button color="inherit" component={Link} to="/blog">
             Blog
           </Button>

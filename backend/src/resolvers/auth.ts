@@ -1,77 +1,103 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { User } from '../models/user';
+import { generateToken } from '../utilities/auth';
+import { IResolvers } from '@graphql-tools/utils';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
+interface LoginArgs {
+  email: string;
+  password: string;
+}
 
-/**
- * Generates a JWT token for the given user ID.
- *
- * @param userId - The ID of the user.
- * @returns A JWT token string.
- */
-const generateToken = (userId: string): string => {
-  if (!JWT_SECRET) {
-    throw new Error('JWT_SECRET is missing in environment variables.');
-  }
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '1h' });
-};
+interface RegisterArgs {
+  name: string;
+  email: string;
+  password: string;
+  roles?: string[];
+}
 
-export const authResolvers = {
+interface Context {
+  user?: { id: string; roles: string[] }; // Include roles in the user context
+}
+
+export const authResolvers: IResolvers = {
+  Query: {
+    /**
+     * Protected `me` query to get the authenticated user's details.
+     * @param _ - The parent object (not used here).
+     * @param __ - The arguments object (not used here).
+     * @param context - The context object containing the authenticated user.
+     * @returns The user's details.
+     */
+    me: async (_: unknown, __: unknown, context: Context) => {
+      if (!context.user) {
+        throw new Error('Unauthorized');
+      }
+      return User.findById(context.user.id);
+    },
+  },
   Mutation: {
     /**
-     * Handles user login.
-     *
-     * @param _parent - Unused parent parameter.
-     * @param args - Object containing email and password.
-     * @returns AuthPayload with token and user information.
+     * Mutation to register a new user.
+     * @param _ - The parent object (not used here).
+     * @param args - The input arguments for registration.
+     * @returns An object containing the JWT token and user details.
      */
-    login: async (
-      _parent: undefined,
-      { email, password }: { email: string; password: string }
-    ) => {
-      try {
-        console.log('Attempting login for email:', email);
+    register: async (_: unknown, args: RegisterArgs) => {
+      const { name, email, password, roles = ['user'] } = args;
 
-        // Find user by email
-        const user = await User.findOne({ email });
-        if (!user) {
-          console.error('User not found for email:', email);
-          throw new Error('Invalid email or password');
-        }
-
-        // Validate password
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) {
-          console.error('Invalid password for email:', email);
-          throw new Error('Invalid email or password');
-        }
-
-        // Generate JWT token
-        const token = generateToken(user._id.toString());
-
-        console.log('Login successful for user:', user.email);
-
-        return {
-          token,
-          user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-          },
-        };
-      } catch (error: any) {
-        console.error('Error in login mutation:', error.message);
-        throw new Error('Login failed: ' + error.message);
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        throw new Error('Email is already in use');
       }
+
+      const user = new User({ name, email, password, roles });
+      await user.save();
+
+      return {
+        token: generateToken(user),
+        user,
+      };
     },
 
     /**
-     * Handles user signup.
-     *
-     * @param _parent - Unused parent parameter.
-     * @param args - Object containing name, email, and password.
-     * @returns AuthPayload with token and user information.
+     * Mutation to log in an existing user.
+     * @param _ - The parent object (not used here).
+     * @param args - The input arguments for login.
+     * @returns An object containing the JWT token and user details.
+     */
+    login: async (_: unknown, args: LoginArgs) => {
+      const { email, password } = args;
+
+      console.log('test');
+      try {
+        console.log(`Login attempt: email=${email}`);
+
+        const user = await User.findOne({ email });
+        if (!user) {
+          console.log('User not found');
+          throw new Error('Invalid email or password');
+        }
+
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+          throw new Error('Invalid email or password');
+        }
+
+        const token = generateToken(user);
+        return { token, user };
+      } catch (error) {
+        console.error('Error in login resolver:', error);
+        throw error;
+      }
+
+      return user;
+    },
+
+    /**
+     * Mutation to update user roles.
+     * @param _ - The parent object (not used here).
+     * @param args - The input arguments for updating user roles.
+     * @param context - The context object containing the authenticated user.
+     * @returns The updated user's details.
      */
     signup: async (
       _parent: undefined,

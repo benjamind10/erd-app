@@ -2,6 +2,7 @@ import { gql } from 'apollo-server';
 import { userTypeDefs } from './user';
 import { feedingTypeDefs } from './feeding';
 import { authTypeDefs } from './auth';
+import { blogTypeDefs } from './blog';
 
 const rootTypeDefs = gql`
   type Query
@@ -13,4 +14,5 @@ export const typeDefs = [
   userTypeDefs,
   feedingTypeDefs,
   authTypeDefs,
+  blogTypeDefs,
 ];
