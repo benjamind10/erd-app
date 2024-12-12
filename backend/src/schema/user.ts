@@ -1,4 +1,3 @@
-
 import { gql } from 'apollo-server';
 
 /**
@@ -11,6 +10,7 @@ export const userTypeDefs = gql`
     id: ID!
     name: String!
     email: String!
+    roles: [String!]!
   }
 
   type Query {
@@ -19,9 +19,19 @@ export const userTypeDefs = gql`
   }
 
   type Mutation {
-    createUser(name: String!, email: String!, password: String!): User!
-    updateUserName(id: ID!, name: String!): User!  # Only updates the name field
+    createUser(
+      name: String!
+      email: String!
+      password: String!
+      roles: [String!]!
+    ): User!
+    updateUserName(
+      id: ID!
+      name: String
+      email: String
+      roles: [String!]
+    ): User! # Update multiple fields
+    forceChangePassword(id: ID!, password: String!): Boolean! # Force password change
     deleteUser(id: ID!): Boolean!
   }
 `;
-

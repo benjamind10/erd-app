@@ -26,10 +26,17 @@ const startServer = async () => {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
+      cors: {
+        origin: 'http://192.168.1.254:3000', // Allow requests from your frontend
+        credentials: true,
+      },
     });
 
-    // Start the server
-    const { url } = await server.listen({ port: PORT || 4000 });
+    // Start the server and make it accessible from anywhere
+    const { url } = await server.listen({
+      port: PORT || 4000,
+      host: '0.0.0.0',
+    });
     console.log(`🚀 Server ready at ${url}`);
   } catch (error) {
     console.error('❌ Error starting the server:', error);

@@ -1,5 +1,6 @@
 import { User } from '../models/user';
 import { isValidEmail } from '../utilities/helpers';
+import bcrypt from 'bcrypt';
 
 export const userResolvers = {
   Query: {
@@ -103,7 +104,11 @@ export const userResolvers = {
 
       return updatedUser;
     },
-
+    forceChangePassword: async (_: any, { id, password }: any) => {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await User.findByIdAndUpdate(id, { password: hashedPassword });
+      return true;
+    },
     /**
      * Deletes a user by their unique ID.
      *

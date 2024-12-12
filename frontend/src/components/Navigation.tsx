@@ -97,7 +97,7 @@ const Navigation: React.FC<NavigationProps> = ({
           </MenuItem>
         </Menu>
 
-        <ListItemButton
+        {/* <ListItemButton
           component={Link}
           to="/doody"
           onClick={handleDrawerToggle}
@@ -110,7 +110,7 @@ const Navigation: React.FC<NavigationProps> = ({
           onClick={handleDrawerToggle}
         >
           <ListItemText primary="Blog" />
-        </ListItemButton>
+        </ListItemButton> */}
 
         {isAuthenticated ? (
           <ListItemButton
@@ -135,7 +135,7 @@ const Navigation: React.FC<NavigationProps> = ({
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           ERD App
@@ -203,9 +203,9 @@ const Navigation: React.FC<NavigationProps> = ({
               Analytics
             </MenuItem>
           </Menu>
-          <Button color="inherit" component={Link} to="/doody">
+          {/* <Button color="inherit" component={Link} to="/doody">
             Doody Tracker
-          </Button>
+          </Button> */}
           <Button color="inherit" component={Link} to="/blog">
             Blog
           </Button>

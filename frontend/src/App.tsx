@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,6 +20,7 @@ import History from './routes/History';
 import Analytics from './routes/Analytics';
 import Unauthorized from './routes/Unauthorized';
 import BlogAdmin from './routes/BlogAdmin';
+import AdminSidebar from './components/AdminSidebar';
 
 // Helper function to get roles from localStorage
 const getRoles = (): string[] => {
@@ -61,6 +62,7 @@ const App: React.FC = () => {
 
   const [darkMode, setDarkMode] = useState(initialMode);
 
+  console.log(getRoles());
   // Create a theme object based on the mode
   const theme = useMemo(
     () =>
@@ -87,69 +89,78 @@ const App: React.FC = () => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Router>
           <Navigation toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-          <Routes>
-            <Route path="/" element={<Navigate to="/feeding/add" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route
-              path="/feeding/add"
-              element={
-                <ProtectedRoute requiredRoles={['admin']}>
-                  <Feeding />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/doody"
-              element={
-                <ProtectedRoute requiredRoles={['admin']}>
-                  <Doody />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/blog"
-              element={
-                <ProtectedRoute requiredRoles={['user', 'admin']}>
-                  <Blog />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/blogs"
-              element={
-                <ProtectedRoute requiredRoles={['admin']}>
-                  <BlogAdmin />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/feeding/today"
-              element={
-                <ProtectedRoute requiredRoles={['admin']}>
-                  <TodayFeedings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/feeding/history"
-              element={
-                <ProtectedRoute requiredRoles={['admin']}>
-                  <History />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/feeding/analytics"
-              element={
-                <ProtectedRoute requiredRoles={['admin']}>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          {/* Render AdminSidebar only for admin users */}
+          {getRoles().includes('admin') && <AdminSidebar />}
+          <Box
+            sx={{
+              marginLeft: getRoles().includes('admin') ? '35px' : '0',
+              paddingTop: '64px',
+            }}
+          >
+            <Routes>
+              <Route path="/blog" element={<Blog />} />
+              <Route
+                path="/admin/blogs"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <BlogAdmin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <BlogAdmin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/" element={<Navigate to="/blog" replace />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              <Route
+                path="/feeding/add"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <Feeding />
+                  </ProtectedRoute>
+                }
+              />
+              {/* <Route
+                path="/doody"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <Doody />
+                  </ProtectedRoute>
+                }
+              /> */}
+              <Route
+                path="/feeding/today"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <TodayFeedings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/feeding/history"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <History />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/feeding/analytics"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Box>
         </Router>
       </LocalizationProvider>
     </ThemeProvider>
