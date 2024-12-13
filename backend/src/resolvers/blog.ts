@@ -1,6 +1,7 @@
 import { IResolvers } from '@graphql-tools/utils';
 import { Blog } from '../models/blog';
 import * as fs from 'fs';
+import { IUser } from '../models/user';
 
 /**
  * Helper function to extract Base64 data from a Data URL.
@@ -42,11 +43,12 @@ export const blogResolvers: IResolvers = {
         title,
         content,
         image,
-      }: { title: string; content: string; image?: string }
+      }: { title: string; content: string; image?: string },
+      context: { user: IUser }
     ) => {
       try {
+        console.log(context);
         let processedImage: string | undefined = undefined;
-
         if (image) {
           processedImage = extractBase64Data(image);
         }

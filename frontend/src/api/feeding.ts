@@ -1,10 +1,5 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-
-// Create Apollo Client
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_APOLLO_URI, // Ensure this URI is set in your .env
-  cache: new InMemoryCache(),
-});
+import { gql } from '@apollo/client';
+import client from './client';
 
 // Define the GraphQL mutation for creating a feeding entry
 const CREATE_FEEDING_MUTATION = gql`

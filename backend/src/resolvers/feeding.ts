@@ -38,7 +38,9 @@ export const feedingResolvers = {
     getTodaysFeedings: async () => {
       const startOfDay = dayjs().startOf('day').toDate();
       const endOfDay = dayjs().endOf('day').toDate();
-      return Feeding.find({ feedingTime: { $gte: startOfDay, $lte: endOfDay } });
+      return Feeding.find({
+        feedingTime: { $gte: startOfDay, $lte: endOfDay },
+      });
     },
   },
 
@@ -48,6 +50,7 @@ export const feedingResolvers = {
       args: { feedingTime: string; amount: number; dha?: boolean },
       context: { user: IUser }
     ) => {
+      console.log(context);
       const { feedingTime, amount, dha } = args;
 
       try {
