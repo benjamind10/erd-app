@@ -1,7 +1,8 @@
-import { ApolloServer, AuthenticationError } from 'apollo-server';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken'; // To decode JWT
+import jwt from 'jsonwebtoken';
+import { ApolloServer, AuthenticationError } from 'apollo-server';
+
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
 
@@ -33,9 +34,6 @@ const startServer = async () => {
 
         const operationName = req.body.operationName;
         if (['Login', 'Register'].includes(operationName)) {
-          console.log(
-            `${operationName} mutation does not require authentication`
-          );
           return {}; // Skip context for login/register
         }
 
@@ -46,7 +44,6 @@ const startServer = async () => {
 
         try {
           const user = jwt.verify(token, JWT_SECRET);
-          console.log('Authenticated user:', user);
           return { user };
         } catch (error) {
           console.error(
