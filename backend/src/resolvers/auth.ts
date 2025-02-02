@@ -15,7 +15,7 @@ interface RegisterArgs {
 }
 
 interface Context {
-  user?: { id: string; roles: string[] }; // Include roles in the user context
+  user?: { id: string; roles: string[] };
 }
 
 export const authResolvers: IResolvers = {
